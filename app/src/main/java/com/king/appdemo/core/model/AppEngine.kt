@@ -1,4 +1,4 @@
-package com.king.appdemo.core
+package com.king.appdemo.core.model
 
 import android.content.Context
 import com.king.appdemo.R

@@ -1,7 +1,7 @@
-package com.king.appdemo
+package com.king.appdemo.core.widget
 
 import android.app.Application
-import com.king.appdemo.core.AppEngine
+import com.king.appdemo.core.model.AppEngine
 
 class AppApplication: Application() {
 
