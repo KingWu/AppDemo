@@ -35,7 +35,7 @@ class FriendListFragment : BaseFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = FriendListViewModel(getAppEngine().apiProvider)
+        viewModel = FriendListViewModel(getAppEngine())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -71,11 +71,16 @@ class FriendListFragment : BaseFragment(){
 
     private fun listenEvent(){
         var disposableGetList: Disposable = viewModel.loadFriend.subscribe {
-            adapter = FriendListAdapter().apply {
-                friendList = it
-                onItemClickListener = onItemClick
+            if(null == adapter){
+                adapter = FriendListAdapter().apply {
+                    friendList = it
+                    onItemClickListener = onItemClick
+                }
+                recyclerView.adapter = adapter
             }
-            recyclerView.adapter = adapter
+            else{
+                adapter?.notifyDataSetChanged()
+            }
         }
 
         var disposableError: Disposable = viewModel.showError.subscribe {
