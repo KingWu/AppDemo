@@ -23,8 +23,8 @@ class FriendListFragment : BaseFragment(){
 
     var toolBar: Toolbar? = null
     var adapter: FriendListAdapter? = null
-    var compositeDisposable: CompositeDisposable = CompositeDisposable()
     lateinit var viewModel: FriendListViewModel
+    var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +39,13 @@ class FriendListFragment : BaseFragment(){
         super.onViewCreated(view, savedInstanceState)
 
         initUI()
-        listenGetFriendList()
+        viewModel.init()
+        listenEvent()
     }
 
     override fun onDestroy() {
         compositeDisposable.dispose()
+        viewModel.dispose()
         recyclerView.adapter = null
         super.onDestroy()
     }
@@ -61,18 +63,20 @@ class FriendListFragment : BaseFragment(){
         recyclerView.addItemDecoration(itemDecorator)
     }
 
-    private fun listenGetFriendList(){
-        var disposable: Disposable = viewModel.triggerGetFriendList()
-            .subscribe({
-                adapter = FriendListAdapter().apply {
-                    friendList = it
-                }
-                recyclerView.adapter = adapter
-            },
-                {
-                    it.printStackTrace()
-                    Toast.makeText(context, R.string.errorNetwork, Toast.LENGTH_SHORT).show()
-                })
-        compositeDisposable.add(disposable)
+    private fun listenEvent(){
+        var disposableGetList: Disposable = viewModel.loadFriend.subscribe {
+            adapter = FriendListAdapter().apply {
+                friendList = it
+            }
+            recyclerView.adapter = adapter
+        }
+
+        var disposableError: Disposable = viewModel.showError.subscribe {
+            it.printStackTrace()
+            Toast.makeText(context, R.string.errorNetwork, Toast.LENGTH_SHORT).show()
+        }
+        compositeDisposable.add(disposableGetList)
+        compositeDisposable.add(disposableError)
+
     }
 }
