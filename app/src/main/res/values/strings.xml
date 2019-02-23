@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AppDemo</string>
+    <string name="baseUrl">http://www.json-generator.com/api/</string>
+
 </resources>
