@@ -31,7 +31,6 @@ class FriendListAdapter :
         val itemView = viewHolder.itemView
 
         var topMargin: Float = 0f
-        Log.d("test", viewHolder.itemView.layoutParams.toString())
         val params = viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
 
         if(0 == position){
