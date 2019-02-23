@@ -11,6 +11,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_root)
-        FragmentFlowUtil.switchView(this, supportFragmentManager, FriendListFragment())
+        FragmentFlowUtil.switchView(this, supportFragmentManager, FriendListFragment(), false)
     }
 }

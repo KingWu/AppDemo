@@ -16,6 +16,18 @@ import kotlinx.android.synthetic.main.item_friend.*
 
 class DetailFragment: BaseFragment(){
 
+    companion object Factory {
+        const val USER_ID: String = "USER_ID"
+
+        fun createInstance(id: String): DetailFragment {
+            return DetailFragment().apply {
+                arguments = Bundle().apply {
+                    putString(USER_ID, id)
+                }
+            }
+        }
+    }
+
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     lateinit var viewModel: DetailViewModel
 

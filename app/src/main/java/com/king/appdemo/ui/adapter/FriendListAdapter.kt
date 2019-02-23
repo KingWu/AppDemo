@@ -9,12 +9,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.king.appdemo.R
 import com.king.appdemo.core.pojo.Friend
+import com.king.appdemo.util.ui.OnItemClickListener
 import kotlinx.android.synthetic.main.item_friend.view.*
 
 class FriendListAdapter :
     RecyclerView.Adapter<FriendListAdapter.ViewHolder>(){
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    var onItemClickListener: OnItemClickListener? = null
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
+
+        init {
+            view.setOnClickListener {
+                onItemClickListener?.onItemClick(view, adapterPosition)
+            }
+        }
+    }
 
     var friendList: List<Friend>? = null
 

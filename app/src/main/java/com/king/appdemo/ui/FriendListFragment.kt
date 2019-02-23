@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.king.appdemo.R
 import com.king.appdemo.core.widget.BaseFragment
 import com.king.appdemo.ui.adapter.FriendListAdapter
+import com.king.appdemo.util.ui.OnItemClickListener
 import com.king.appdemo.vm.FriendListViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -25,6 +26,12 @@ class FriendListFragment : BaseFragment(){
     var adapter: FriendListAdapter? = null
     lateinit var viewModel: FriendListViewModel
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    var onItemClick = object: OnItemClickListener{
+        override fun onItemClick(view: View, pos: Int) {
+            viewModel.handleItemClick(activity, pos)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +53,6 @@ class FriendListFragment : BaseFragment(){
     override fun onDestroy() {
         compositeDisposable.dispose()
         viewModel.dispose()
-        recyclerView.adapter = null
         super.onDestroy()
     }
 
@@ -67,6 +73,7 @@ class FriendListFragment : BaseFragment(){
         var disposableGetList: Disposable = viewModel.loadFriend.subscribe {
             adapter = FriendListAdapter().apply {
                 friendList = it
+                onItemClickListener = onItemClick
             }
             recyclerView.adapter = adapter
         }
