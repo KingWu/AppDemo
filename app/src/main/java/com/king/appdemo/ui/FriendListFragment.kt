@@ -46,8 +46,7 @@ class FriendListFragment : BaseFragment(){
         super.onViewCreated(view, savedInstanceState)
 
         initUI()
-        viewModel.init()
-        listenEvent()
+        init()
     }
 
     override fun onDestroy() {
@@ -67,6 +66,16 @@ class FriendListFragment : BaseFragment(){
         val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
         itemDecorator.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.item_divider)!!)
         recyclerView.addItemDecoration(itemDecorator)
+    }
+
+    private fun init(){
+        if(null == adapter){
+            viewModel.init()
+            listenEvent()
+        }
+        else{
+            recyclerView.adapter = adapter
+        }
     }
 
     private fun listenEvent(){

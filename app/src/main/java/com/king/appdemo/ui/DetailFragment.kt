@@ -33,7 +33,7 @@ class DetailFragment: BaseFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = DetailViewModel()
+        viewModel = DetailViewModel(getAppEngine())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,7 +42,8 @@ class DetailFragment: BaseFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadLoadFriend()
+        viewModel.init(arguments?.getString(USER_ID)!!)
+        listEvent()
     }
 
     override fun onDestroy() {
@@ -51,12 +52,11 @@ class DetailFragment: BaseFragment(){
         super.onDestroy()
     }
 
-    fun loadLoadFriend(){
-        var disposableLoadFriend: Disposable = viewModel.getFriend.subscribe {
+    fun listEvent(){
+        var disposableLoadFriend: Disposable = viewModel.getFriend.subscribe{
             updateUI(it)
         }
         compositeDisposable.add(disposableLoadFriend)
-        viewModel.loadFriend()
     }
 
     fun updateUI(friend: Friend){

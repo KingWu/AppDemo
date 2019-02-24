@@ -59,5 +59,6 @@ class FriendListViewModel(val appEngine: AppEngine){
 
     fun dispose(){
         compositeDisposable.dispose()
+        realm.close()
     }
 }
