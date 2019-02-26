@@ -2,10 +2,8 @@ package com.king.appdemo.ui
 
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +16,11 @@ import com.king.appdemo.vm.FriendListViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_list.*
+import kotlinx.android.synthetic.main.fragment_toolbar.*
 
 
 class FriendListFragment : BaseFragment(){
 
-    var toolBar: Toolbar? = null
     var adapter: FriendListAdapter? = null
     lateinit var viewModel: FriendListViewModel
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -57,11 +55,7 @@ class FriendListFragment : BaseFragment(){
     }
 
     private fun initUI(){
-
-        var appCompatActivity: AppCompatActivity = activity as AppCompatActivity
-
-        toolBar = appCompatActivity.findViewById(R.id.toolbar)
-        toolBar?.title = getString(R.string.titleFriendList)
+        toolbar?.title = getString(R.string.titleFriendList)
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)

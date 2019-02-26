@@ -25,14 +25,14 @@ class DetailViewModel(val appEngine: AppEngine){
     var friendList: RealmResults<Friend>? = null
     var lastMarker: Marker? = null
 
-    fun init(id: String, isShowAll: Boolean){
+    fun init(id: String?, isShowAll: Boolean){
 
         realm = Realm.getDefaultInstance()
 
         var query : Flowable<RealmResults<Friend>> = if(isShowAll){
-            appEngine.databaseProvider.loadFriend(realm, id)
-        } else{
             appEngine.databaseProvider.loadFriendList(realm)
+        } else{
+            appEngine.databaseProvider.loadFriend(realm, id!!)
         }
         var loadFriendDisposable: Disposable? = query.subscribe { friends ->
             friendList = friends

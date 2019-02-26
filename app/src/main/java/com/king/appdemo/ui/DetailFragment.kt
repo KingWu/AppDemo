@@ -1,6 +1,7 @@
 package com.king.appdemo.ui
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.king.appdemo.vm.DetailViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.realm.RealmResults
+import kotlinx.android.synthetic.main.fragment_toolbar.*
 import kotlinx.android.synthetic.main.item_friend.*
 
 
@@ -64,8 +66,9 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
-            viewModel.init(it.getString(USER_ID)!!, it.getBoolean(IS_SHOW_ALL, false))
+            viewModel.init(it.getString(USER_ID), it.getBoolean(IS_SHOW_ALL, false))
         }
+        initUI()
         listEvent()
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -98,9 +101,11 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
             focusMarkerChange ->
                 focusMarkerChange.oldMarker?.let {
                     it.title = null
+                    it.hideInfoWindow()
                 }
                 focusMarkerChange.newMarker?.let {
                     it.title = focusMarkerChange.selectedFriend?.name
+                    it.showInfoWindow()
                 }
             updateUI(focusMarkerChange.selectedFriend)
         }
@@ -110,7 +115,16 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
 
     }
 
-    fun updateUI(friend: Friend?){
+    fun initUI(){
+        toolbar?.title = getString(R.string.titleMap)
+        var appCompatActivity = activity as AppCompatActivity
+        appCompatActivity.setSupportActionBar(toolbar)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        appCompatActivity.supportActionBar?.setDisplayShowHomeEnabled(true)
+        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
+    }
+
+   fun updateUI(friend: Friend?){
         friend?.let {
             txtName.text = friend.name
             Glide.with(context!!)
