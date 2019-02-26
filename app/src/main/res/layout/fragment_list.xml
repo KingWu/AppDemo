@@ -14,10 +14,19 @@
     </include>
 
     <android.support.v7.widget.RecyclerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
     </android.support.v7.widget.RecyclerView>
+
+
+    <Button
+        android:id="@+id/butShowAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/buttonShowAll"
+        android:visibility="gone"/>
 </LinearLayout>

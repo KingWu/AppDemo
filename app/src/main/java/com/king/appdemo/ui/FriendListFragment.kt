@@ -46,7 +46,8 @@ class FriendListFragment : BaseFragment(){
         super.onViewCreated(view, savedInstanceState)
 
         initUI()
-        init()
+        initUIEvent()
+        initModel()
     }
 
     override fun onDestroy() {
@@ -68,18 +69,25 @@ class FriendListFragment : BaseFragment(){
         recyclerView.addItemDecoration(itemDecorator)
     }
 
-    private fun init(){
+    private fun initUIEvent(){
+        butShowAll.setOnClickListener {
+            viewModel.clickShowAllInMap(activity)
+        }
+    }
+
+    private fun initModel(){
         if(null == adapter){
             viewModel.init()
             listenEvent()
         }
         else{
             recyclerView.adapter = adapter
+            visiableShowAllMapButton()
         }
     }
 
     private fun listenEvent(){
-        var disposableGetList: Disposable = viewModel.loadFriend.subscribe {
+        var disposableGetList: Disposable = viewModel.loadFriendList.subscribe {
             if(null == adapter){
                 adapter = FriendListAdapter().apply {
                     friendList = it
@@ -90,6 +98,7 @@ class FriendListFragment : BaseFragment(){
             else{
                 adapter?.notifyDataSetChanged()
             }
+            visiableShowAllMapButton()
         }
 
         var disposableError: Disposable = viewModel.showError.subscribe {
@@ -98,6 +107,9 @@ class FriendListFragment : BaseFragment(){
         }
         compositeDisposable.add(disposableGetList)
         compositeDisposable.add(disposableError)
+    }
 
+    private fun visiableShowAllMapButton(){
+        butShowAll.visibility = View.VISIBLE
     }
 }

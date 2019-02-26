@@ -38,16 +38,13 @@ class DatabaseProvider(context: Context) {
         }
     }
 
-    fun loadFriend(realm: Realm, id: String): io.reactivex.Flowable<Friend> {
-        var query : io.reactivex.Flowable<com.king.appdemo.core.pojo.Friend> = realm.where(Friend::class.java)
+    fun loadFriend(realm: Realm, id: String): io.reactivex.Flowable<RealmResults<Friend>> {
+        return realm.where(Friend::class.java)
             .equalTo("_id", id)
-            .findFirstAsync()
+            .findAllAsync()
             .asFlowable()
-
-        return query.filter{
-            it.isLoaded && it.isValid
-        }
+            .filter{
+                it.isLoaded && it.isValid
+            }
     }
-
-
 }

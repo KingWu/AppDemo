@@ -17,7 +17,7 @@ class FriendListViewModel(val appEngine: AppEngine){
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    var loadFriend = BehaviorSubject.create<List<Friend>>()
+    var loadFriendList = BehaviorSubject.create<List<Friend>>()
     var showError = BehaviorSubject.create<Throwable>()
     lateinit var realm: Realm
 
@@ -28,7 +28,7 @@ class FriendListViewModel(val appEngine: AppEngine){
         val disposable: Disposable = appEngine.apiProvider.getFriendList()
             .subscribe(
                 {
-//                    loadFriend.onNext(it)
+//                    loadFriendList.onNext(it)
                 },
                 {
                     showError.onNext(it)
@@ -38,12 +38,22 @@ class FriendListViewModel(val appEngine: AppEngine){
         val loadFriendDisposable: Disposable = appEngine.databaseProvider.loadFriendList(realm)
             .subscribe { it ->
                 it.addChangeListener(RealmChangeListener<RealmResults<Friend>> {
-                    loadFriend.onNext(it)
+                    loadFriendList.onNext(it)
                 })
-                loadFriend.onNext(it)
+                loadFriendList.onNext(it)
             }
         compositeDisposable.add(disposable)
         compositeDisposable.add(loadFriendDisposable)
+    }
+
+    fun clickShowAllInMap(acticity: FragmentActivity?){
+        acticity?.let {
+            FragmentFlowUtil.switchView(
+                acticity,
+                acticity.supportFragmentManager,
+                DetailFragment.createInstance(true)
+            )
+        }
     }
 
     fun handleItemClick(acticity: FragmentActivity?, position: Int){
@@ -52,7 +62,7 @@ class FriendListViewModel(val appEngine: AppEngine){
             FragmentFlowUtil.switchView(
                 acticity,
                 acticity.supportFragmentManager,
-                DetailFragment.createInstance(loadFriend.value?.get(position)?._id!!)
+                DetailFragment.createInstance(loadFriendList.value?.get(position)?._id!!)
             )
         }
     }

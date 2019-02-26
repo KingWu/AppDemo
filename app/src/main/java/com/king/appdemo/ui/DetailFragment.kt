@@ -20,6 +20,7 @@ import com.king.appdemo.core.widget.BaseFragment
 import com.king.appdemo.vm.DetailViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.realm.RealmResults
 import kotlinx.android.synthetic.main.item_friend.*
 
 
@@ -27,6 +28,8 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
 
     companion object Factory {
         const val USER_ID: String = "USER_ID"
+        const val IS_SHOW_ALL: String = "IS_SHOW_ALL"
+
 
         fun createInstance(id: String): DetailFragment {
             return DetailFragment().apply {
@@ -35,9 +38,16 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
                 }
             }
         }
+
+        fun createInstance(showAll: Boolean): DetailFragment {
+            return DetailFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(IS_SHOW_ALL, showAll)
+                }
+            }
+        }
     }
 
-    private var lastMarker: Marker? = null
     private var mMap: GoogleMap? = null
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     lateinit var viewModel: DetailViewModel
@@ -53,7 +63,9 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.init(arguments?.getString(USER_ID)!!)
+        arguments?.let {
+            viewModel.init(it.getString(USER_ID)!!, it.getBoolean(IS_SHOW_ALL, false))
+        }
         listEvent()
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -69,22 +81,33 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap?) {
         mMap = googleMap
         mMap?.setOnMarkerClickListener {
-            var friend: Friend? = it.tag as Friend?
-            lastMarker?.let {
-                it.title = null
-            }
-            lastMarker = it
-            it.title = friend?.name
+            viewModel.clickMarker(it)
             true
         }
-        updateUI(viewModel.getFriend.value)
+        viewModel.setMapReady()
     }
 
     fun listEvent(){
-        var disposableLoadFriend: Disposable = viewModel.getFriend.subscribe{
+        var disposableLoadFriend: Disposable = viewModel.updateUI.subscribe{
             updateUI(it)
         }
+        var disposeAddMarker = viewModel.addMarkers.subscribe{
+            addMarker(it)
+        }
+        var disposeFocusChange = viewModel.focusMarkerChange.subscribe{
+            focusMarkerChange ->
+                focusMarkerChange.oldMarker?.let {
+                    it.title = null
+                }
+                focusMarkerChange.newMarker?.let {
+                    it.title = focusMarkerChange.selectedFriend?.name
+                }
+            updateUI(focusMarkerChange.selectedFriend)
+        }
+        compositeDisposable.add(disposeFocusChange)
         compositeDisposable.add(disposableLoadFriend)
+        compositeDisposable.add(disposeAddMarker)
+
     }
 
     fun updateUI(friend: Friend?){
@@ -94,14 +117,17 @@ class DetailFragment: BaseFragment(), OnMapReadyCallback {
                 .load(friend.picture)
                 .apply(RequestOptions.circleCropTransform())
                 .into(imgPicture)
+        }
+    }
 
-            mMap?.let {
-                var location: Location? = friend.location
-                val latlng = LatLng(location?.latitude!!, location?.longitude!!)
-                var marker = mMap?.addMarker(MarkerOptions().position(latlng))
+    fun addMarker(friends: RealmResults<Friend>?){
+        friends?.let {
+            for (friend: Friend in friends) {
+                val location: Location? = friend.location
+                val latlng = LatLng(location?.latitude!!, location.longitude!!)
+                val marker = mMap?.addMarker(MarkerOptions().position(latlng))
                 marker?.tag = friend
                 mMap?.moveCamera(CameraUpdateFactory.newLatLng(latlng))
-                return
             }
         }
     }
