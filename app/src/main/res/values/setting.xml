@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="baseUrl">http://www.json-generator.com/api/</string>
+    <string name="googleMapKey">AIzaSyDLFmuWrZvoZl0exQddRy5R7Z1ZgHtKWkU</string>
+
+
 </resources>
